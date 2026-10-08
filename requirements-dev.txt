@@ -8,7 +8,6 @@ pytest-cov>=6.0.0
 # Type checking
 mypy>=1.15.0
 types-python-jose>=3.3.4.20240123
-types-passlib>=1.7.7.20240311
 
 # Linting & formatting
 ruff>=0.9.10
