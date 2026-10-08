@@ -1,0 +1,15 @@
+-r requirements.txt
+
+# Testing
+pytest>=8.3.5
+pytest-asyncio>=0.25.3
+pytest-cov>=6.0.0
+
+# Type checking
+mypy>=1.15.0
+types-python-jose>=3.3.4.20240123
+types-passlib>=1.7.7.20240311
+
+# Linting & formatting
+ruff>=0.9.10
+pre-commit>=4.1.0
