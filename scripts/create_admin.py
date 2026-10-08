@@ -1,17 +1,19 @@
-"""Create (or promote) an admin user: python -m scripts.create_admin EMAIL PASSWORD"""
+"""Create (or promote) an admin user: python -m scripts.create_admin EMAIL PASSWORD
+
+Run `alembic upgrade head` first.
+"""
 
 import asyncio
 import sys
 
 from sqlalchemy import select
 
-from app.core.database import SessionLocal, create_tables
+from app.core.database import SessionLocal
 from app.core.security import hash_password
 from app.models import User
 
 
 async def main(email: str, password: str) -> None:
-    await create_tables()
     async with SessionLocal() as session:
         user = await session.scalar(select(User).where(User.email == email))
         if user is None:

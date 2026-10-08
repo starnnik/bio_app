@@ -9,11 +9,24 @@ FastAPI + async SQLAlchemy 2.0, JWT-авторизация.
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements-dev.txt
 cp .env.example .env            # задайте SECRET_KEY
+alembic upgrade head           # применить миграции
 python -m scripts.create_admin admin@example.com 'strong-password'
 uvicorn app.main:app --reload   # документация: http://localhost:8000/docs
 ```
 
-Таблицы создаются при старте приложения (`create_tables`); для продакшена нужны миграции Alembic.
+## Миграции (Alembic)
+
+URL БД берётся из `DATABASE_URL` (см. `migrations/env.py`), драйвер асинхронный.
+
+```bash
+alembic upgrade head                              # применить все миграции
+alembic revision --autogenerate -m "описание"     # создать миграцию по изменениям моделей
+alembic downgrade -1                              # откатить одну миграцию
+alembic check                                     # есть ли расхождения моделей и миграций
+```
+
+Новая модель должна импортироваться в `app/models/__init__.py`, иначе autogenerate её не увидит.
+Тест `tests/test_migrations.py` падает, если модели и миграции разошлись.
 
 ## Проверки
 

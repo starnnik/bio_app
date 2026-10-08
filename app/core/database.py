@@ -1,11 +1,21 @@
 from collections.abc import AsyncIterator
 
+from sqlalchemy import event
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
 from app.core.config import settings
 
 engine = create_async_engine(settings.database_url)
+
+
+if engine.dialect.name == "sqlite":
+
+    @event.listens_for(engine.sync_engine, "connect")
+    def _enable_sqlite_fks(dbapi_connection, _):  # type: ignore[no-untyped-def]
+        dbapi_connection.execute("PRAGMA foreign_keys=ON")
+
+
 SessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 
 
@@ -16,11 +26,3 @@ class Base(DeclarativeBase):
 async def get_session() -> AsyncIterator[AsyncSession]:
     async with SessionLocal() as session:
         yield session
-
-
-async def create_tables() -> None:
-    """Dev helper; replace with Alembic migrations once the schema settles."""
-    import app.models  # noqa: F401  (register models on Base.metadata)
-
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
